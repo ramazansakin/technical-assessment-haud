@@ -1,7 +1,6 @@
 package com.test.haud.spamfiltergatewayservice.service.impl;
 
 import com.test.haud.spamfiltergatewayservice.model.pojo.SMS;
-import com.test.haud.spamfiltergatewayservice.service.impl.BlockedDestinationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -26,7 +25,7 @@ public class SMSService {
         rabbitTemplate.convertAndSend(queue, sms);
         if (!blockedDestinationService.isBlocked(sms.getDestination())) {
             // send the sms to related person if destination is not blocked
-            log.info("SMS sent to destination");
-        } else log.info("SMS could not be sent to destination");
+            log.debug("SMS sent to destination");
+        } else log.debug("SMS could not be sent to destination");
     }
 }

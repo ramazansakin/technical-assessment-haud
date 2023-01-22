@@ -19,7 +19,7 @@ public class ChargingService {
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
     public void chargeSMS(IncomingSMS incomingSMS) {
-        log.info("Incoming SMS " + incomingSMS);
+        log.debug("Incoming SMS " + incomingSMS);
         SMS sms = convertToEntity(incomingSMS);
         smsRepository.save(sms);
     }
