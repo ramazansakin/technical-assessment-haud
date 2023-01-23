@@ -14,13 +14,30 @@ services:
     build:
       context: spam-filter-gateway-service
     ports:
-      - "8080:8080"
+      - "8081:8081"
+      - "8082:8082"
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
     depends_on:
       - rabbitmq
     deploy:
+      mode: replicated
+      replicas: 2
+
+  gateway2:
+    build:
+      context: spam-filter-gateway-service
+    ports:
+      - "8083:8083"
+      - "8084:8084"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+    depends_on:
+      - rabbitmq
+    deploy:
+      mode: replicated
       replicas: 2
 
   charging:
@@ -33,3 +50,5 @@ services:
       - SPRING_RABBITMQ_PORT=5672
     depends_on:
       - rabbitmq
+    deploy:
+      mode: global
