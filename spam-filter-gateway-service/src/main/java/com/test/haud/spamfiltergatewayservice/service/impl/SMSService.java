@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SMSService {
 
-    private final RabbitTemplate rabbitTemplate;
     private final BlockedDestinationService blockedDestinationService;
+    private final RabbitTemplate rabbitTemplate;
 
     @Value("${spring.rabbitmq.queue}")
     private String queue;
