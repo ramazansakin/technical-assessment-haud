@@ -5,6 +5,7 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -25,6 +26,15 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.routingkey}")
     private String routingKey;
 
+//    @Value("${spring.rabbitmq.cache.connection.size}")
+//    private int connectionCacheSize;
+//
+//    @Value("${spring.rabbitmq.username}")
+//    private String username;
+//
+//    @Value("${spring.rabbitmq.password}")
+//    private String pass;
+
     @Bean
     Queue queue() {
         return new Queue(queueName, false);
@@ -44,6 +54,17 @@ public class RabbitMQConfig {
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
+
+    // I also tried to use channel pool to decrease connection latency but I started to get the error like
+    // ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile
+    // Then I rolled back as before
+//    @Bean
+//    public CachingConnectionFactory connectionFactory() {
+//        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+//        connectionFactory.setCacheMode(CachingConnectionFactory.CacheMode.CONNECTION);
+//        connectionFactory.setConnectionCacheSize(connectionCacheSize);
+//        return connectionFactory;
+//    }
 
     @Bean
     public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
