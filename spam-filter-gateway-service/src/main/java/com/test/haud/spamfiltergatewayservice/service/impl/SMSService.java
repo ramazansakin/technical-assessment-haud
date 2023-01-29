@@ -14,6 +14,8 @@ public class SMSService {
 
     private final BlockedDestinationService blockedDestinationService;
     private final RabbitTemplate rabbitTemplate;
+//    private final Schema schema = AvroSchema.getInstance().getSchema();
+
 
     @Value("${spring.rabbitmq.queue}")
     private String queue;
@@ -54,6 +56,13 @@ public class SMSService {
     public void receiveSMS(SMS sms) {
         // submit messages (fire-and-forget) to the charging module irrespective of the spam filter`s outcome
         log.debug("Outgoing sms to rabbitMQ : " + sms);
+
+        // Avro Serialization
+//        GenericRecord record = new GenericData.Record(schema);
+//        record.put("source", sms.getSource());
+//        record.put("destination", sms.getDestination());
+//        record.put("message", sms.getMessage());
+//        record.put("timeStamp", sms.getTimeStamp());
         rabbitTemplate.convertAndSend(queue, sms);
         if (!blockedDestinationService.isBlocked(sms.getDestination())) {
             // send the sms to related person if destination is not blocked

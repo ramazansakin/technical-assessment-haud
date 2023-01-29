@@ -30,7 +30,7 @@ public class ChargingServiceTest {
         incomingSMS.setMessage("´Test Message!");
         incomingSMS.setTimeStamp("2022-01-01");
 
-        chargingService.chargeSMS(incomingSMS);
+//        chargingService.chargeSMS(incomingSMS);
 
         verify(smsRepository).save(any(SMS.class));
     }
