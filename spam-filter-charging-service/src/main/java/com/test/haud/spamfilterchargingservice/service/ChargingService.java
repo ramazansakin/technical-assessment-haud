@@ -9,6 +9,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -18,10 +20,15 @@ public class ChargingService {
     private final SMSRepository smsRepository;
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
-    public void chargeSMS(IncomingSMS incomingSMS) {
-        log.debug("Incoming SMS " + incomingSMS);
-        SMS sms = convertToEntity(incomingSMS);
-        smsRepository.save(sms);
+    public void chargeSMS(List<IncomingSMS> incomingSMSList) {
+        List<SMS> smsBatch = new LinkedList<>();
+        for (IncomingSMS incomingSMS : incomingSMSList) {
+            log.info("Incoming SMS " + incomingSMS);
+            SMS sms = convertToEntity(incomingSMS);
+            smsBatch.add(sms);
+        }
+        // sms entity batching
+        smsRepository.saveAll(smsBatch);
     }
 
     private SMS convertToEntity(final IncomingSMS incomingSMS) {
