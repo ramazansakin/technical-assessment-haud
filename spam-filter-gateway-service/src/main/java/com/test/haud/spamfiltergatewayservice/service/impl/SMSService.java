@@ -17,39 +17,6 @@ public class SMSService {
 
     @Value("${spring.rabbitmq.queue}")
     private String queue;
-//
-//    private final Queue<SMS> smsBuffer = new LinkedList<>();
-//    private final int bufferSize = 500; // adjust this number as needed
-//    private final long batchInterval = 450; // adjust this number as needed, in milliseconds
-//
-//    public SMSService(RabbitTemplate rabbitTemplate, BlockedDestinationService blockedDestinationService) {
-//        this.rabbitTemplate = rabbitTemplate;
-//        this.blockedDestinationService = blockedDestinationService;
-//        startBufferThread();
-//    }
-//
-//    private void startBufferThread() {
-//        Thread bufferThread = new Thread(() -> {
-//            while (true) {
-//                try {
-//                    Thread.sleep(batchInterval);
-//                } catch (InterruptedException e) {
-//                    log.error("Error while sleeping buffer thread", e);
-//                }
-//                if (!smsBuffer.isEmpty()) {
-//                    List<SMS> smsBatch = new ArrayList<>();
-//                    int count = 0;
-//                    while (!smsBuffer.isEmpty() && count < bufferSize) {
-//                        smsBatch.add(smsBuffer.poll());
-//                        count++;
-//                    }
-//                    log.debug("Sending batch of {} SMS messages to charging service", smsBatch.size());
-//                    rabbitTemplate.convertAndSend(queue, smsBatch);
-//                }
-//            }
-//        });
-//        bufferThread.start();
-//    }
 
     public void receiveSMS(SMS sms) {
         // submit messages (fire-and-forget) to the charging module irrespective of the spam filter`s outcome
