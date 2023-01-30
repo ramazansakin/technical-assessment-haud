@@ -28,9 +28,6 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.routingkey}")
     private String routingKey;
 
-    @Value("${spring.rabbitmq.cache.connection.size}")
-    private int connectionCacheSize;
-
     @Value("${spring.rabbitmq.username}")
     private String username;
 
@@ -63,7 +60,7 @@ public class RabbitMQConfig {
         connectionFactory.setCacheMode(CachingConnectionFactory.CacheMode.CONNECTION);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(pass);
-        connectionFactory.setConnectionCacheSize(connectionCacheSize);
+        connectionFactory.setConnectionCacheSize(10);
         return connectionFactory;
     }
 
