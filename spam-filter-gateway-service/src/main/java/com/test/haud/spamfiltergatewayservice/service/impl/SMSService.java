@@ -22,6 +22,7 @@ public class SMSService {
     @Value("${spring.rabbitmq.queue}")
     private String queue;
 
+    // private ConcurrentLinkedDeque<SMS> smsBatch = new ConcurrentLinkedDeque<>();
     private List<SMS> smsBatch = new ArrayList<>();
 
     public void receiveSMS(SMS sms) {
@@ -30,8 +31,8 @@ public class SMSService {
         smsBatch.add(sms);
         if (!blockedDestinationService.isBlocked(sms.getDestination())) {
             // Send the SMS to the related person if the destination is not blocked
-            log.debug("SMS sent to destination");
-        } else log.debug("SMS could not be sent to destination");
+            log.info("SMS sent to destination");
+        } else log.info("SMS could not be sent to destination");
     }
 
     @Scheduled(fixedDelay = 100)
