@@ -19,7 +19,7 @@ public class ChargingService {
 
     private final SMSRepository smsRepository;
 
-    @RabbitListener(queues = "${spring.rabbitmq.queue}")
+    @RabbitListener(queues = "${spring.rabbitmq.queue}", containerFactory = "multiConsumerFactory")
     public void chargeSMS(List<IncomingSMS> incomingSMSList) {
         List<SMS> smsBatch = new LinkedList<>();
         for (IncomingSMS incomingSMS : incomingSMSList) {
