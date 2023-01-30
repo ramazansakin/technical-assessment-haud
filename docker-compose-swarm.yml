@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    
+  gateway:
+    image: haud-project-gateway
+    build:
+      context: spam-filter-gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+    depends_on:
+      - rabbitmq
+    deploy:
+      replicas: 2
+
+  charging:
+    image: haud-project-charging
+    build:
+      context: spam-filter-charging-service
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+    depends_on:
+      - rabbitmq
