@@ -1,5 +1,6 @@
 package com.test.haud.spamfiltergatewayservice.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class RabbitMQConfig {
 
@@ -26,14 +28,14 @@ public class RabbitMQConfig {
     @Value("${spring.rabbitmq.routingkey}")
     private String routingKey;
 
-//    @Value("${spring.rabbitmq.cache.connection.size}")
-//    private int connectionCacheSize;
-//
-//    @Value("${spring.rabbitmq.username}")
-//    private String username;
-//
-//    @Value("${spring.rabbitmq.password}")
-//    private String pass;
+    @Value("${spring.rabbitmq.cache.connection.size}")
+    private int connectionCacheSize;
+
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+
+    @Value("${spring.rabbitmq.password}")
+    private String pass;
 
     @Bean
     Queue queue() {
@@ -55,21 +57,28 @@ public class RabbitMQConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    // I also tried to use channel pool to decrease connection latency but I started to get the error like
-    // ACCESS_REFUSED - Login was refused using authentication mechanism PLAIN. For details see the broker logfile
-    // Then I rolled back as before
-//    @Bean
-//    public CachingConnectionFactory connectionFactory() {
-//        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-//        connectionFactory.setCacheMode(CachingConnectionFactory.CacheMode.CONNECTION);
-//        connectionFactory.setConnectionCacheSize(connectionCacheSize);
-//        return connectionFactory;
-//    }
+    // I also tried to use channel pool to decrease connection latency
+    public CachingConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setCacheMode(CachingConnectionFactory.CacheMode.CONNECTION);
+        connectionFactory.setUsername(username);
+        connectionFactory.setPassword(pass);
+        connectionFactory.setConnectionCacheSize(connectionCacheSize);
+        return connectionFactory;
+    }
 
     @Bean
-    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+    public AmqpTemplate rabbitTemplate() {
+        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        // Publisher Confirms, to ensure that RabbitMQ has received
+        // and stored a message before acknowledging it to the producer
+        rabbitTemplate.setMandatory(true);
+        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+            if (!ack) {
+                log.error("Message not sent to RabbitMQ: {}", cause);
+            }
+        });
         return rabbitTemplate;
     }
 }

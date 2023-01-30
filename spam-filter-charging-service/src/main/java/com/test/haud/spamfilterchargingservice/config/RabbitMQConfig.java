@@ -1,5 +1,6 @@
 package com.test.haud.spamfilterchargingservice.config;
 
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -58,7 +59,8 @@ public class RabbitMQConfig {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(jsonMessageConverter());
-        factory.setConcurrentConsumers(5); // desired number of consumers to run parallel
+        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+        factory.setConcurrentConsumers(10); // desired number of consumers to run parallel
         factory.setPrefetchCount(500); // number of messages to be fetched simultaneously - default 250
         return factory;
     }

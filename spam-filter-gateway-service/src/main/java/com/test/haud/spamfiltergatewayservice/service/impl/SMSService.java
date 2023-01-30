@@ -22,6 +22,9 @@ public class SMSService {
     @Value("${spring.rabbitmq.queue}")
     private String queue;
 
+    private static final long BATCH_INTERVAL = 150;
+
+    // To be sure there is no concurrency issue
     // private ConcurrentLinkedDeque<SMS> smsBatch = new ConcurrentLinkedDeque<>();
     private List<SMS> smsBatch = new ArrayList<>();
 
@@ -35,7 +38,7 @@ public class SMSService {
         } else log.info("SMS could not be sent to destination");
     }
 
-    @Scheduled(fixedDelay = 100)
+    @Scheduled(fixedDelay = BATCH_INTERVAL)
     public void sendBatch() {
         log.debug("Sending batch of SMS messages to RabbitMQ...");
         rabbitTemplate.convertAndSend(queue, smsBatch);

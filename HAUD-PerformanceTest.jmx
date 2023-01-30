@@ -18,7 +18,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1000</stringProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -33,8 +33,8 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-    &quot;source&quot;: &quot;+111111&quot;,&#xd;
-    &quot;destination&quot;: &quot;+2222222&quot;,&#xd;
+    &quot;source&quot;: &quot;+111111111&quot;,&#xd;
+    &quot;destination&quot;: &quot;+222222222&quot;,&#xd;
     &quot;message&quot;: &quot;Test message&quot;&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
