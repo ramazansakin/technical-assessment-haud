@@ -51,13 +51,17 @@ public class SMSService {
 //        bufferThread.start();
 //    }
 
-    public void receiveSMS(SMS sms) {
+    public boolean receiveSMS(SMS sms) {
         // submit messages (fire-and-forget) to the charging module irrespective of the spam filter`s outcome
         log.debug("Outgoing sms to rabbitMQ : " + sms);
         rabbitTemplate.convertAndSend(queue, sms);
         if (!blockedDestinationService.isBlocked(sms.getDestination())) {
             // send the sms to related person if destination is not blocked
-            log.debug("SMS sent to destination");
-        } else log.debug("SMS could not be sent to destination");
+            // It can be SMS message sending via f.e Twilio or mail sending via f.e JavaMailSender
+            log.info("SMS sent to destination");
+            return true;
+        }
+        log.info("SMS could not be sent to destination");
+        return false;
     }
 }

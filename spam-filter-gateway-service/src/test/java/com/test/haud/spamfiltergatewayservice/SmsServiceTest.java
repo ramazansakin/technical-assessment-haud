@@ -3,6 +3,7 @@ package com.test.haud.spamfiltergatewayservice;
 import com.test.haud.spamfiltergatewayservice.model.pojo.SMS;
 import com.test.haud.spamfiltergatewayservice.service.impl.BlockedDestinationService;
 import com.test.haud.spamfiltergatewayservice.service.impl.SMSService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.when;
 public class SmsServiceTest {
 
     @InjectMocks
-    private SMSService gatewayService;
+    private SMSService smsService;
 
     @Mock
     private BlockedDestinationService destinationService;
@@ -43,10 +44,11 @@ public class SmsServiceTest {
         // stub
         when(destinationService.isBlocked(smsRequest.getDestination())).thenReturn(false);
         // then
-        gatewayService.receiveSMS(smsRequest);
+        boolean actualIsSend = smsService.receiveSMS(smsRequest);
         // verify
         verify(destinationService).isBlocked(smsRequest.getDestination());
         verify(rabbitTemplate).convertAndSend(any(), (Object) any());
+        Assert.assertTrue(actualIsSend);
     }
 
     @Test
@@ -54,9 +56,10 @@ public class SmsServiceTest {
         // stub
         when(destinationService.isBlocked(smsRequest.getDestination())).thenReturn(true);
         // then
-        gatewayService.receiveSMS(smsRequest);
+        boolean actualIsSend = smsService.receiveSMS(smsRequest);
         // verify
         verify(destinationService).isBlocked(smsRequest.getDestination());
         verify(rabbitTemplate).convertAndSend(any(), (Object) any());
+        Assert.assertFalse(actualIsSend);
     }
 }
