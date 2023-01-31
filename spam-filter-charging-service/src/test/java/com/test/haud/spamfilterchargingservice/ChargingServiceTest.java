@@ -27,7 +27,7 @@ public class ChargingServiceTest {
         IncomingSMS incomingSMS = new IncomingSMS();
         incomingSMS.setSource("+123123132");
         incomingSMS.setDestination("+45345435");
-        incomingSMS.setMessage("´Test Message!");
+        incomingSMS.setMessage("Test Message!");
         incomingSMS.setTimeStamp("2022-01-01");
 
         chargingService.chargeSMS(incomingSMS);
