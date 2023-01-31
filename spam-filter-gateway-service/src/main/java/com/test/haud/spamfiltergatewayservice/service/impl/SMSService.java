@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
 @Service
@@ -22,23 +24,25 @@ public class SMSService {
     @Value("${spring.rabbitmq.queue}")
     private String queue;
 
-    private List<SMS> smsBatch = new ArrayList<>();
+    private final BlockingQueue<SMS> smsQueue = new LinkedBlockingQueue<>();
 
     public void receiveSMS(SMS sms) {
         // submit messages (fire-and-forget) to the charging module irrespective of the spam filter`s outcome
         log.debug("Outgoing sms to rabbitMQ : " + sms);
-        smsBatch.add(sms);
+        smsQueue.add(sms);
+        log.debug("SMS added to queue");
         if (!blockedDestinationService.isBlocked(sms.getDestination())) {
             // Send the SMS to the related person if the destination is not blocked
-            log.debug("SMS sent to destination");
         } else log.debug("SMS could not be sent to destination");
     }
 
-    @Scheduled(fixedDelay = 100)
-    public void sendBatch() {
-        log.debug("Sending batch of SMS messages to RabbitMQ...");
-        rabbitTemplate.convertAndSend(queue, smsBatch);
-        smsBatch.clear();
+    @Scheduled(fixedDelay = 500)
+    public void processQueue() {
+        List<SMS> batch = new ArrayList<>();
+        smsQueue.drainTo(batch);
+        if (!batch.isEmpty()) {
+            rabbitTemplate.convertAndSend(queue, batch);
+        }
     }
 
 }
